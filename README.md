@@ -60,4 +60,4 @@ Then create an instance of the client each time the table change:
 npx prisma generate
 ```
 
-See some script to do query on the database
+See [some script](https://github.com/RaphaelHardFork/coscience-db/blob/main/testingPrismaClient.js) to do query on the database

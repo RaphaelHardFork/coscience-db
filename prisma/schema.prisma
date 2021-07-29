@@ -12,12 +12,12 @@ generator client {
 
 model Users {
   id          Int       @id @default(autoincrement())
-  firstName   String    @db.VarChar(255)
-  lastName    String    @db.VarChar(255)
-  email       String    @unique @db.VarChar(255)
+  firstName   String    @db.VarChar(255) // NOT NULL
+  lastName    String    @db.VarChar(255) //
+  email       String    @unique @db.VarChar(255) // unique
   createdAt   DateTime  @default(now())
   wallets     String[]  @db.VarChar(45)
-  apiKey      ApiKey?
+  apiKey      ApiKey?   
   articles    Articles[]
   comments    Comments[]
   reviews     Reviews[]
@@ -35,7 +35,7 @@ model ApiKey {
 model Articles {
   id            Int         @id @default(autoincrement())
   blockchainId  Int         @unique
-  author        Users       @relation(fields: [authorId], references:[id])
+  author        Users       @relation(fields: [authorId], references:[id]) //@relation(this table, reference table)
   authorId      Int
   title         String      @db.Text
   abstract      String      @db.Text

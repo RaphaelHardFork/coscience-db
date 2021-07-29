@@ -1,5 +1,5 @@
 const express = require("express")
-const { register, getApiKey } = require("./useDB")
+const { register, getApiKeyById } = require("./useDB")
 
 const IP_LOOPBACK = "localhost"
 const IP_LOCAL = "172.28.0.1"
@@ -27,15 +27,27 @@ app.post("/register", async (req, res) => {
   try {
     const userId = await register(firstName, lastName, email)
     if (userId !== "fail") {
-      const key = await getApiKey(userId)
+      const key = await getApiKeyById(userId)
       if (userId !== "fail") {
         res.json({ status: "success", userId, key })
       }
     }
+    console.log("erreur function")
     res.status(400).json({ status: "failed", error: "Something went wrong" })
   } catch (e) {
+    console.log(e)
+    console.log("erreur catch")
     res.status(400).send(`something went wrong`)
   }
+})
+
+app.get("/article", async (req, res) => {
+  // query in a function
+})
+
+app.get("/article/:id", async (req, res) => {
+  const id = req.params.id
+  // query in a function
 })
 
 // listen the server
@@ -46,5 +58,5 @@ app.listen(PORT, IP_LOOPBACK, () => {
 obj = {
   firstName: "dodo",
   lastName: "rpito",
-  email: "ju@mail.com",
+  email: "ju@madsdsdsil.com",
 }

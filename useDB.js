@@ -38,7 +38,7 @@ exports.register = async (firstName, lastName, email) => {
   }
 }
 
-exports.getApiKey = async (userId) => {
+exports.getApiKeyById = async (userId) => {
   try {
     const result = await prisma.users.findUnique({
       where: {
@@ -59,5 +59,13 @@ exports.getApiKey = async (userId) => {
     console.log(e) // manage error with PRISMA
     onClose()
     return "fail"
+  }
+}
+
+exports.getArticleList = async () => {
+  try {
+    // query
+  } catch (e) {
+    console.log(e)
   }
 }

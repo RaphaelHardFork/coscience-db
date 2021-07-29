@@ -105,7 +105,7 @@ const inspectRealisations = async () => {
   try {
     const result = await prisma.users.findUnique({
       where: {
-        id: 5,
+        id: 27,
       },
       select: {
         firstName: true,
@@ -113,6 +113,7 @@ const inspectRealisations = async () => {
         articles: true,
         comments: true,
         reviews: true,
+        apiKey: true,
       },
     })
     console.log(result)

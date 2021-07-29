@@ -1,10 +1,42 @@
 const axios = require("axios")
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient, Prisma } = require("@prisma/client")
 const prisma = new PrismaClient()
 
 // Close the connection to the database at the end
 const onClose = async () => {
   await prisma.$disconnect()
+}
+
+const customizeError = (e) => {
+  if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    e.status = "failed"
+    e.dataError = {}
+    switch (e.code) {
+      case "P2002":
+        e.dataError[e.meta.target[0]] = `${e.meta.target[0]} already exists`
+        break
+      case "P2000":
+        // error is not well defined: can't access to the target
+        e.dataError = `The provided value for the column is too long for one of the arguments`
+        break
+      default:
+        e.dataError = e.message
+    }
+  } else if (e instanceof Prisma.PrismaClientUnknownRequestError) {
+    e.status = "failed"
+    if (!e.dataError) {
+      e[dataError] = "Unknown error"
+    } else {
+      e.dataError = "Unknown error"
+    }
+  } else if (e instanceof Prisma.PrismaClientValidationError) {
+    e["dataError"] = `One of the input is missing or is in the wrong type`
+    e["code"] = "WRONG_ARGS"
+    e["status"] = "failed"
+  } else {
+    e.status = "error"
+  }
+  throw e
 }
 
 exports.register = async (firstName, lastName, email) => {
@@ -32,9 +64,9 @@ exports.register = async (firstName, lastName, email) => {
 
     return result.id
   } catch (e) {
-    console.log(e)
+    customizeError(e)
     onClose()
-    return "fail"
+    throw e
   }
 }
 
@@ -56,9 +88,9 @@ exports.getApiKeyById = async (userId) => {
     //console.log(result.apiKey.key)
     return result.apiKey.key
   } catch (e) {
-    console.log(e) // manage error with PRISMA
+    customizeError(e)
     onClose()
-    return "fail"
+    throw e
   }
 }
 

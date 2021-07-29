@@ -26,18 +26,21 @@ app.post("/register", async (req, res) => {
   const email = req.body.email
   try {
     const userId = await register(firstName, lastName, email)
-    if (userId !== "fail") {
-      const key = await getApiKeyById(userId)
-      if (userId !== "fail") {
-        res.json({ status: "success", userId, key })
-      }
-    }
-    console.log("erreur function")
-    res.status(400).json({ status: "failed", error: "Something went wrong" })
+    const key = await getApiKeyById(userId)
+    res.json({ status: "success", userId, key })
   } catch (e) {
     console.log(e)
-    console.log("erreur catch")
-    res.status(400).send(`something went wrong`)
+    if (e.status === "failed") {
+      res.status(400).json({ status: "failed", message: e.dataError })
+    } else if (e.status === "error") {
+      res
+        .status(400)
+        .json({ status: "error", message: "Unknown error with the client" })
+    } else {
+      res
+        .status(500)
+        .json({ status: "error", message: "error with the server" })
+    }
   }
 })
 

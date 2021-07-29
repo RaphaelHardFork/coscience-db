@@ -52,3 +52,9 @@ const insert = async () => {
 }
 
 //insert().finally(() => onClose())
+
+obj = {
+  firstName: "alice",
+  lastName: "rout",
+  email: "alphoinse@mail.com",
+}

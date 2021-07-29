@@ -7,26 +7,32 @@ const onClose = async () => {
 }
 
 const customizeError = (e) => {
-  // test some error UNIQUE, TOO MUCH CHAR, MISSING ARGs(controlled in amont)
   if (e instanceof Prisma.PrismaClientKnownRequestError) {
-    e.status = "fail"
+    e.status = "failed"
     e.dataError = {}
-    console.log(e.code)
     switch (e.code) {
       case "P2002":
-        console.log("case P2002")
         e.dataError[e.meta.target[0]] = `${e.meta.target[0]} already exists`
         break
+      case "P2000":
+        // error is not well defined: can't access to the target
+        e.dataError = `The provided value for the column is too long for one of argument`
+        break
       default:
-        console.log("default")
-        e.dataError[e.meta.target[0]] = e.message
+        e.dataError = e.message
     }
   } else if (e instanceof Prisma.PrismaClientUnknownRequestError) {
-    console.log(e.code)
+    e.status = "failed"
+    if (!e.dataError) {
+      e[dataError] = "Unknown error"
+    } else {
+      e.dataError = "Unknown error"
+    }
   } else if (e instanceof Prisma.PrismaClientValidationError) {
-    // tell error
+    e["dataError"] = `One of the input is missing or is in the wrong type`
+    e["code"] = "WRONG_ARGS"
+    e["status"] = "failed"
   } else {
-    console.log("not instance")
     e.status = "error"
   }
   throw e
@@ -37,9 +43,11 @@ const insertWrongArticle = async () => {
     const result = await prisma.articles.create({
       data: {
         authorId: 2,
-        title: "article title quatros",
+        blockchainId: "r",
+        title:
+          "article title quatrosaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         abstract: "that is the abstract of the article quatros",
-        contentCID: "Qmfdfdsfdcscefdsfsdfsfdfsfsddfddfescsecfsedsds",
+        contentCID: "Qmfdfdsfdcscefdsfsdfaaaaaescsecfsedsds",
       },
     })
     console.log(result)

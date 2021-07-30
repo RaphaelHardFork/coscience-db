@@ -61,3 +61,15 @@ npx prisma generate
 ```
 
 See [some script](https://github.com/RaphaelHardFork/coscience-db/blob/main/testingPrismaClient.js) to do query on the database
+
+---
+
+# TODO
+
+- add info in DB (@map), change some details (add bioCID, ...)
+- migrate the DB
+- refactoring of express (modular routes: get, insert, update, ...)
+- refactoring the useDB.js file into severals file (useDbGetter, ...)
+- interact with IPFS in Express route
+- check IPNS for folder (ipfs/cid/:id)
+- otherwise create structured JSON article

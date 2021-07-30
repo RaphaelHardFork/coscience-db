@@ -1,4 +1,6 @@
 const express = require("express")
+const { get } = require("./get")
+
 const {
   register,
   getApiKeyById,
@@ -9,13 +11,15 @@ const {
   getCommentsOnArticle,
 } = require("./useDB")
 
-const IP_LOOPBACK = "localhost"
-const IP_LOCAL = "172.28.0.1"
-const PORT = 3333
-
 const app = express()
 
-// middlewares
+const IP_LOOPBACK = "localhost"
+const IP_LOCAL = process.env.IP
+const PORT = process.env.PORT
+
+app.use("/get", get)
+
+// MIDDLEWARES
 const seeApiKey = async (req, res, next) => {
   const apiKey = req.headers.authorization
   if (!apiKey) {
@@ -112,7 +116,7 @@ app.get("/article/:id", async (req, res) => {
   } catch (e) {
     if (e.status === "failed") {
       console.log("ERREUR")
-      res.status(400).send("erreur")
+      res.status(400).json({ status: "failed", message: e.dataError })
     } else if (e.status === "error") {
       res
         .status(400)
@@ -206,7 +210,7 @@ app.get("/user/:wallet", async (req, res) => {
   // query in a function
 })
 
-// authorization needed for the following route
+// authorization needed for the following routes
 app.use(seeApiKey)
 app.use(checkApiKey)
 

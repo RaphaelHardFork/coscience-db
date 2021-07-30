@@ -281,6 +281,34 @@ exports.getCommentsOnArticle = async (articleId) => {
   }
 }
 
+exports.getReviewsOnArticle = async (articleId) => {
+  try {
+    const result = await prisma.articles.findMany({
+      where: {
+        id: articleId,
+      },
+      select: {
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    return result
+  } catch (e) {
+    customizeError(e)
+    throw e
+  }
+}
+
 exports.getUserByWallet = async (wallet) => {
   try {
     // query

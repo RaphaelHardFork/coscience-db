@@ -1,10 +1,3 @@
-const { register, getApiKey } = require("./useDB")
+require("dotenv").config()
 
-//console.log(register("rato", "kiki", "thebigbluemailby"))
-
-const main = async () => {
-  //return await getApiKey(12)
-  return await register("rrr", "eee", "fdiiifdfdd")
-}
-
-console.log(main())
+console.log(process.env.DATABASE_URL)

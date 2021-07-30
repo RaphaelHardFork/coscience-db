@@ -8,17 +8,42 @@ const onClose = async () => {
 
 const inspect = async () => {
   try {
-    const result = await prisma.users.findUnique({
-      where: {
-        id: 38,
-      },
+    const result = await prisma.articles.findMany({
       select: {
-        firstName: true,
-        lastName: true,
-        id: true,
-        apiKey: {
+        title: true,
+        author: {
           select: {
-            key: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        abstract: true,
+        contentCID: true,
+        reviews: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
           },
         },
       },
@@ -29,7 +54,7 @@ const inspect = async () => {
   }
 }
 
-inspect().finally(() => onClose())
+//inspect().finally(() => process.exit(0))
 
 const insert = async () => {
   try {
@@ -53,8 +78,83 @@ const insert = async () => {
 
 //insert().finally(() => onClose())
 
-obj = {
-  firstName: "alice",
-  lastName: "rout",
-  email: "alphoinse@mail.com",
+const getUserIdByKey = async (apiKey) => {
+  try {
+    const result = await prisma.apiKey.findUnique({
+      where: {
+        key: apiKey,
+      },
+      select: {
+        userId: true,
+      },
+    })
+    console.log(result)
+  } catch (e) {
+    console.log(e)
+  }
 }
+
+//getUserIdByKey("is it the api key").finally(() => process.exit(0))
+const getUser = async () => {
+  try {
+    const result = await prisma.users.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+        wallets: true,
+        articles: {
+          select: {
+            title: true,
+          },
+        },
+        comments: {
+          select: {
+            title: true,
+          },
+        },
+        reviews: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    })
+    console.log(result)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+//getUser().finally(() => process.exit(0))
+
+const getCommentsOnArticle = async (articleId) => {
+  try {
+    const result = await prisma.articles.findMany({
+      where: {
+        id: articleId,
+      },
+      select: {
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    console.log(result)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+getCommentsOnArticle(2).finally(() => process.exit(0))

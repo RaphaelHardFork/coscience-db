@@ -10,13 +10,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// add @map
 model Users {
   id          Int       @id @default(autoincrement())
   firstName   String    @db.VarChar(255) // NOT NULL
   lastName    String    @db.VarChar(255) //
   email       String    @unique @db.VarChar(255) // unique
   createdAt   DateTime  @default(now())
-  wallets     String[]  @db.VarChar(45)
+  wallets     String[]  @db.VarChar(45) // UNIQUE impossible to have one wallet for two user
   apiKey      ApiKey?   
   articles    Articles[]
   comments    Comments[]
@@ -29,7 +30,7 @@ model ApiKey {
   id          Int     @id @default(autoincrement())
   user        Users   @relation(fields: [userId], references:[id])
   userId      Int     
-  key         String  @db.VarChar(100)
+  key         String  @unique @db.VarChar(100)
 }
 
 model Articles {
@@ -38,6 +39,8 @@ model Articles {
   author        Users       @relation(fields: [authorId], references:[id]) //@relation(this table, reference table)
   authorId      Int
   title         String      @db.Text
+  createdAt     DateTime    @default(now())
+
   abstract      String      @db.Text
   contentCID    String      @db.VarChar(50)
   comments      Comments[]
@@ -52,6 +55,8 @@ model Comments {
   author        Users       @relation(fields: [authorId], references:[id])
   authorId      Int
   title         String      @db.Text
+  createdAt     DateTime    @default(now())
+
   contentCID    String      @db.VarChar(50)
   onArticle     Articles    @relation(fields: [articleId], references:[id])
   articleId     Int
@@ -65,6 +70,8 @@ model Reviews {
   author        Users       @relation(fields: [authorId], references:[id])
   authorId      Int
   title         String      @db.Text
+  createdAt     DateTime    @default(now())
+
   contentCID    String      @db.VarChar(50)
   onArticle     Articles    @relation(fields: [articleId], references:[id])
   articleId     Int

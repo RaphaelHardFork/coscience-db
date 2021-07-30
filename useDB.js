@@ -3,10 +3,15 @@ const { PrismaClient, Prisma } = require("@prisma/client")
 const prisma = new PrismaClient()
 
 // Close the connection to the database at the end
+/*
+This function is not necessary now, maybe in production
+
 const onClose = async () => {
   await prisma.$disconnect()
 }
+*/
 
+// Add informations to errors
 const customizeError = (e) => {
   if (e instanceof Prisma.PrismaClientKnownRequestError) {
     e.status = "failed"
@@ -25,7 +30,7 @@ const customizeError = (e) => {
   } else if (e instanceof Prisma.PrismaClientUnknownRequestError) {
     e.status = "failed"
     if (!e.dataError) {
-      e[dataError] = "Unknown error"
+      e["dataError"] = "Unknown error"
     } else {
       e.dataError = "Unknown error"
     }
@@ -33,12 +38,18 @@ const customizeError = (e) => {
     e["dataError"] = `One of the input is missing or is in the wrong type`
     e["code"] = "WRONG_ARGS"
     e["status"] = "failed"
+  } else if (e instanceof Prisma.PrismaClientInitializationError) {
+    e[
+      "dataError"
+    ] = `Please make sure your database server is running at localhost:5432`
+    e["status"] = "failed"
   } else {
     e.status = "error"
   }
   throw e
 }
 
+// register into the database
 exports.register = async (firstName, lastName, email) => {
   try {
     // get the key via Drand.love
@@ -59,13 +70,9 @@ exports.register = async (firstName, lastName, email) => {
       },
     })
 
-    // close the connection
-    onClose()
-
     return result.id
   } catch (e) {
     customizeError(e)
-    onClose()
     throw e
   }
 }
@@ -84,17 +91,197 @@ exports.getApiKeyById = async (userId) => {
         },
       },
     })
-    onClose()
-    //console.log(result.apiKey.key)
     return result.apiKey.key
   } catch (e) {
     customizeError(e)
-    onClose()
+    throw e
+  }
+}
+
+// getter
+exports.getUserIdByKey = async (apiKey) => {
+  try {
+    const result = await prisma.apiKey.findUnique({
+      where: {
+        key: apiKey,
+      },
+      select: {
+        userId: true,
+      },
+    })
+    return result
+  } catch (e) {
+    customizeError(e)
+    throw e
+  }
+}
+
+exports.getUser = async () => {
+  try {
+    const result = await prisma.users.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+        wallets: true,
+        articles: {
+          select: {
+            title: true,
+          },
+        },
+        comments: {
+          select: {
+            title: true,
+          },
+        },
+        reviews: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    })
+    return result
+  } catch (e) {
+    customizeError(e)
     throw e
   }
 }
 
 exports.getArticleList = async () => {
+  try {
+    const result = await prisma.articles.findMany({
+      select: {
+        title: true,
+        author: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        abstract: true,
+        contentCID: true,
+        reviews: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    return result
+  } catch (e) {
+    customizeError(e)
+    throw e
+  }
+}
+
+exports.getArticle = async (articleId) => {
+  try {
+    const result = await prisma.articles.findUnique({
+      where: {
+        id: articleId,
+      },
+      select: {
+        title: true,
+        author: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        abstract: true,
+        contentCID: true,
+        reviews: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    return result
+  } catch (e) {
+    customizeError(e)
+    throw e
+  }
+}
+
+exports.getCommentsOnArticle = async (articleId) => {
+  try {
+    const result = await prisma.articles.findMany({
+      where: {
+        id: articleId,
+      },
+      select: {
+        comments: {
+          select: {
+            title: true,
+            contentCID: true,
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    return result
+  } catch (e) {
+    customizeError(e)
+    throw e
+  }
+}
+
+exports.getUserByWallet = async (wallet) => {
   try {
     // query
   } catch (e) {

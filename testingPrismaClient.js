@@ -38,14 +38,14 @@ const insert = async () => {
 
 const inspect = async () => {
   try {
-    const result = await prisma.users.findMany()
+    const result = await prisma.apiKey.findMany()
     console.log(result)
   } catch (e) {
     console.log(e)
   }
 }
 
-//inspect().finally(() => onClose())
+inspect().finally(() => onClose())
 
 const insertArticle = async () => {
   try {
@@ -122,7 +122,7 @@ const inspectRealisations = async () => {
   }
 }
 
-inspectRealisations().finally(() => onClose())
+//inspectRealisations().finally(() => onClose())
 
 const insertCommentAndReview = async () => {
   try {

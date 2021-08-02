@@ -29,9 +29,10 @@ const pinJSON = async (JSON) => {
   }
 }
 
+//test
 const obj = {
-  firstName: "bob",
-  lastName: "zetoun",
+  firstName: "Changer pour test",
+  lastName: "Changer pour tst",
   email: "alice@mail.com",
 }
 

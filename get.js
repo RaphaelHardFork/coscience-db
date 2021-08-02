@@ -18,6 +18,7 @@ get.get("/reviews/:article_id", async (req, res) => {
     const result = await getReviewsOnArticle(article_id)
     res.json({ status: "success", data: result })
   } catch (e) {
+    // catchError(e) => create the function
     if (e.status === "failed") {
       res.status(400).json({ status: "failed", message: e.dataError })
     } else if (e.status === "error") {

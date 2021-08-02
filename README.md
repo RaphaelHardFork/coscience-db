@@ -69,6 +69,7 @@ See [some script](https://github.com/RaphaelHardFork/coscience-db/blob/main/test
 - add info in DB (@map), change some details (add bioCID, ...)
 - migrate the DB
 - refactoring of express (modular routes: get, insert, update, ...)
+- add catchError function
 - refactoring the useDB.js file into severals file (useDbGetter, ...)
 - interact with IPFS in Express route
 - check IPNS for folder (ipfs/cid/:id)
